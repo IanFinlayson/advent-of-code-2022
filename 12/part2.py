@@ -1,5 +1,4 @@
 import sys
-from heapq import *
 
 # convert letters into numerical heights
 def score(letter):
