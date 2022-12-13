@@ -1,11 +1,12 @@
 import sys
 
-
 def isOrdered(left, right):
     # if they are both lists
     if isinstance(left, list) and isinstance(right, list):
         # if one runs out first, that tells us the order
-        if len(left) == 0:
+        if len(left) == 0 and len(right) == 0:
+            return None
+        elif len(left) == 0:
             return True
         elif len(right) == 0:
             return False
@@ -36,8 +37,6 @@ def isOrdered(left, right):
             # no result, so move on to next thing
             return None
 
-
-
 lines = sys.stdin.readlines()
 index = 1
 total = 0
@@ -47,10 +46,7 @@ for i in range(0, len(lines), 3):
     right = eval(lines[i + 1])
     
     # check it
-    order = isOrdered(left, right)
-    if order == None:
-        print("hmmm...")
-    if order == True:
+    if isOrdered(left, right):
         total += index
     index += 1
     
