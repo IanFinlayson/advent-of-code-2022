@@ -1,5 +1,12 @@
 import sys
 
+# for part two, we limit the sizes of the numbers by modding them by the product
+# of all the divisibility tests.  This doesn't change the answer since modulus
+# is associative in a way: (X + Y) % Z is the same as ((X % Z) + (Y % Z) % Z)
+# I had to spend some time mucking around with this before I understood why it works...
+# the divisorProducts is the LCM of the numbers (which are all prime)
+divisorProducts = 1
+
 class Monkey:
     def __init__(self, items, modfunc, divisor, t_recip, f_recip):
         self.items = items
@@ -13,16 +20,20 @@ class Monkey:
         while len(self.items) > 0:
             # take out our next item
             item = self.items.pop(0)
-
+            
+            # handle the item, DONT divide by 3
+            item = self.modfunc(item)
+            
+            # instead mod it by the product of all divisors
+            # this keeps numbers smaller while retaining correct answer
+            item = item % divisorProducts
+            
             # do the test
             if item % self.divisor == 0:
                 recip = self.t_recip
             else:
                 recip = self.f_recip
-            
-            # handle the item, DONT divide by 3
-            item = self.modfunc(item)
-                
+
             # send to other monkey
             compatriots[recip].items.append(item)
             
@@ -31,6 +42,7 @@ class Monkey:
 
 # read in the data this is very hackish feeling
 def getMonkeys():
+    global divisorProducts
     lines = sys.stdin.readlines()
     monkey_count = len(lines) + 1 // 7
     monkeys = []
@@ -57,6 +69,9 @@ def getMonkeys():
         divisor = int(lines[pointer + 3][21:-1])
         t_recip = int(lines[pointer + 4][29:-1])
         f_recip = int(lines[pointer + 5][30:-1])
+       
+        # times the divisor into its product so we can mod by it
+        divisorProducts *= divisor
         
         monkeys.append(Monkey(items, modfunc, divisor, t_recip, f_recip))
     return monkeys
@@ -64,9 +79,10 @@ def getMonkeys():
 def round(monkeys):
     for monkey in monkeys:
         monkey.turn(monkeys)
+        #print("Monkey inspected", monkey.inspected, "items")
 
 monkeys = getMonkeys()
-for i in range(1000):
+for i in range(10000):
     round(monkeys)
 
 maxes = [0, 0]
