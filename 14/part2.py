@@ -69,42 +69,47 @@ def dropGrain(grid, drop_col):
     sand_loc = [drop_col, 0]
 
     while True:
-        #print("Sand is at row", sand_loc[1], "col", sand_loc[0])
-        try:
-            # try to move it down
-            if grid[sand_loc[1] + 1][sand_loc[0]] == ".":
-                sand_loc[1] += 1
+        # try to move it down
+        if grid[sand_loc[1] + 1][sand_loc[0]] == ".":
+            sand_loc[1] += 1
 
-            # try to move it down/left
-            elif grid[sand_loc[1] + 1][sand_loc[0] - 1] == ".":
-                sand_loc[1] += 1
-                sand_loc[0] -= 1
+        # try to move it down/left
+        elif grid[sand_loc[1] + 1][sand_loc[0] - 1] == ".":
+            sand_loc[1] += 1
+            sand_loc[0] -= 1
 
-            # try to move down/right
-            elif grid[sand_loc[1] + 1][sand_loc[0] + 1] == ".":
-                sand_loc[1] += 1
-                sand_loc[0] += 1
+        # try to move down/right
+        elif grid[sand_loc[1] + 1][sand_loc[0] + 1] == ".":
+            sand_loc[1] += 1
+            sand_loc[0] += 1
 
-            # else it comes to rest
+        # else it comes to rest
+        else:
+            grid[sand_loc[1]][sand_loc[0]] = "O"
+            
+            # check if it is still in row 0
+            if sand_loc[1] == 0:
+                return False
             else:
-                grid[sand_loc[1]][sand_loc[0]] = "O"
                 return True
-
-        # if we looked out of bounds, we're donezo
-        except IndexError:
-            return False
-    
 
 # run the sand simulation, returning how many steps we got to
 def sandSimulation(grid, drop_col):
-    steps = 0
+    steps = 1
     while dropGrain(grid, drop_col):
         steps += 1
-        printGrid(grid)
+        #printGrid(grid)
     return steps
 
 lines = readInput()
 minX, maxX, minY, maxY = getBounds(lines)
+
+# add a very long line representing the floor to the input
+lines.append([[0, maxY + 2], [1000, maxY + 2]])
+
+# recaluclate new min/max
+minX, maxX, minY, maxY = getBounds(lines)
+
 grid = buildGrid(lines, minX, maxX, minY, maxY)
 print(sandSimulation(grid, 500 - minX))
 
